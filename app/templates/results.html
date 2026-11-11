@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prediction Result | CarePredict</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">CarePredict<span>.</span></div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#about">About</a>
+        </div>
+
+        <a href="{{ url_for('prediction') }}" class="nav-button">
+            New Prediction
+        </a>
+    </nav>
+
+    <main class="form-section">
+
+        <div class="form-heading">
+            <span class="tag">ANALYSIS COMPLETE</span>
+            <h1>Prediction Result</h1>
+            <p>Here is the estimated appointment no-show risk.</p>
+        </div>
+
+        <section class="patient-form result-card">
+
+            <div class="result-icon">
+                {% if risk_level == 'high' %}
+                    ⚠️
+                {% else %}
+                    ✓
+                {% endif %}
+            </div>
+
+            <h2 class="result-title">{{ prediction }}</h2>
+
+            <p class="result-description">
+                {% if risk_level == 'high' %}
+                    The model estimates an increased likelihood of a missed appointment.
+                {% else %}
+                    The model estimates a lower likelihood of a missed appointment.
+                {% endif %}
+            </p>
+
+            <div class="probability-section">
+
+                <div class="probability-heading">
+                    <span>No-show Probability</span>
+                    <strong>{{ probability }}%</strong>
+                </div>
+
+                <div class="probability-bar">
+                    <div class="probability-fill"
+                         style="width: {{ probability }}%;">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="result-disclaimer">
+                Academic decision-support prototype.
+                This prediction is not a clinical diagnosis.
+            </div>
+
+            <a href="{{ url_for('prediction') }}" class="submit-button result-button">
+                Generate Another Prediction →
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prediction History | CarePredict</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">CarePredict<span>.</span></div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('prediction') }}">New Prediction</a>
+        </div>
+
+        <a href="{{ url_for('home') }}" class="nav-button">Back to Home</a>
+    </nav>
+
+    <!-- History Section -->
+    <main class="form-section">
+
+        <div class="form-heading">
+            <span class="tag">RECORDS</span>
+            <h1>Prediction History</h1>
+            <p>View and track previously generated appointment predictions.</p>
+        </div>
+
+        <div class="history-container">
+
+            {% if records %}
+
+            <div class="history-table-wrapper">
+
+                <table class="history-table">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Neighbourhood</th>
+                            <th>Appointment Date</th>
+                            <th>Waiting Days</th>
+                            <th>Prediction</th>
+                            <th>Probability</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for record in records %}
+
+                        <tr>
+                            <td>#{{ record.id }}</td>
+                            <td>{{ record.gender }}</td>
+                            <td>{{ record.age }}</td>
+                            <td>{{ record.neighbourhood }}</td>
+                            <td>{{ record.appointment_date }}</td>
+                            <td>{{ record.waiting_days }}</td>
+
+                            <td>
+                                {% if record.prediction == "High No-Show Risk" %}
+                                <span class="risk-badge high-risk">High Risk</span>
+                                {% else %}
+                                <span class="risk-badge low-risk">Low Risk</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <strong>{{ record.probability }}%</strong>
+                            </td>
+
+                            <td>{{ record.created_at }}</td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-history">
+                <div class="empty-history-icon">📋</div>
+                <h2>No Predictions Yet</h2>
+                <p>Your prediction history will appear here after your first prediction.</p>
+
+                <a href="{{ url_for('prediction') }}" class="primary-button">
+                    Generate Prediction →
+                </a>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+    <footer>
+        CarePredict © 2026 | Academic Project
+    </footer>
+
+</body>
+
+</html>

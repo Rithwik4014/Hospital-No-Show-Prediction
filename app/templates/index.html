@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CarePredict | Hospital No-Show Prediction</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+
+        <div class="logo">CarePredict<span>.</span></div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#about">About</a>
+            <a href="{{ url_for('history') }}">Prediction History</a>
+        </div>
+
+        <a href="{{ url_for('prediction') }}" class="nav-button">
+            Get Started
+        </a>
+
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="hero" id="home">
+
+        <div class="hero-content">
+
+            <div class="tag">
+                HEALTHCARE INTELLIGENCE
+            </div>
+
+            <h1>
+                Smarter Predictions.<br>
+                <span>Better Healthcare.</span>
+            </h1>
+
+            <p>
+                Identify patients at risk of missing their appointments
+                using machine learning. Make informed decisions and
+                improve hospital appointment management.
+            </p>
+
+            <a href="{{ url_for('prediction') }}" class="primary-button">
+                Start Prediction <span>→</span>
+            </a>
+
+            <div class="note">
+                Machine Learning Based Decision Support System
+            </div>
+
+        </div>
+
+        <!-- Appointment Card -->
+        <div class="hero-card">
+
+            <div class="card-header">
+                <span>Appointment Overview</span>
+                <span class="card-icon">✚</span>
+            </div>
+
+            <div class="appointment-icon">🏥</div>
+
+            <h2>Patient Appointment</h2>
+
+            <p>Intelligent No-Show Risk Assessment</p>
+
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <span>Prediction</span>
+                <strong>AI Powered</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Technology</span>
+                <strong>Machine Learning</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Application</span>
+                <strong>Healthcare</strong>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+
+        <h2>About CarePredict</h2>
+
+        <p>
+            CarePredict is an academic machine learning project that
+            analyses historical hospital appointment data to estimate
+            the likelihood of missed appointments.
+        </p>
+
+    </section>
+
+    <!-- Prediction Section -->
+    <section class="prediction">
+
+        <h2>Ready to Get Started?</h2>
+
+        <p>
+            Enter patient appointment details to generate a prediction.
+        </p>
+
+        <a href="{{ url_for('prediction') }}" class="primary-button">
+            Open Prediction Form →
+        </a>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        CarePredict © 2026 | Academic Project
+    </footer>
+
+</body>
+
+</html>

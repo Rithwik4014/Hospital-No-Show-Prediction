@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patient Prediction | CarePredict</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">CarePredict<span>.</span></div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('home') }}#about">About</a>
+        </div>
+
+        <a href="{{ url_for('home') }}" class="nav-button">Back to Home</a>
+    </nav>
+
+    <main class="form-section">
+
+        <div class="form-heading">
+            <span class="tag">PATIENT ANALYSIS</span>
+            <h1>Patient Appointment Details</h1>
+            <p>Enter patient information to estimate appointment no-show risk.</p>
+        </div>
+
+        <form class="patient-form" id="patientForm"
+              action="{{ url_for('predict') }}" method="POST">
+
+            <div class="sample-actions">
+
+                <button type="button" id="samplePatientBtn">
+                    Fill Sample Patient
+                </button>
+
+                <button type="reset" class="clear-btn">
+                    Clear Form
+                </button>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="Gender" required>
+                        <option value="">Select gender</option>
+                        <option value="F">Female</option>
+                        <option value="M">Male</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="Age" min="0" max="100"
+                           placeholder="Enter age" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Neighbourhood</label>
+                    <select name="Neighbourhood" required>
+                        <option value="">Select neighbourhood</option>
+                        {% for area in neighbourhoods %}
+                        <option value="{{ area }}">{{ area }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Scholarship</label>
+                    <select name="Scholarship" required>
+                        <option value="">Select option</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Hypertension</label>
+                    <select name="Hipertension" required>
+                        <option value="">Select option</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Diabetes</label>
+                    <select name="Diabetes" required>
+                        <option value="">Select option</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Alcoholism</label>
+                    <select name="Alcoholism" required>
+                        <option value="">Select option</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Handicap Level</label>
+                    <select name="Handcap" required>
+                        <option value="">Select level</option>
+                        {% for level in range(5) %}
+                        <option value="{{ level }}">{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>SMS Received</label>
+                    <select name="SMS_received" required>
+                        <option value="">Select option</option>
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Scheduled Date</label>
+                    <input type="date" id="scheduledDate"
+                           name="ScheduledDay" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Appointment Date</label>
+                    <input type="date" id="appointmentDate"
+                           name="AppointmentDay" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Waiting Days (Automatic)</label>
+                    <input type="number" id="waitingDays"
+                           name="WaitingDays"
+                           placeholder="Calculated automatically"
+                           readonly required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Appointment Day (Automatic)</label>
+
+                    <input type="text" id="appointmentDay"
+                           placeholder="Calculated automatically"
+                           readonly>
+
+                    <input type="hidden" id="appointmentDayValue"
+                           name="AppointmentDayOfWeek">
+                </div>
+
+            </div>
+
+            <button type="submit" class="submit-button">
+                Generate Prediction →
+            </button>
+
+            <p class="form-note">
+                Academic decision-support prototype. Not a clinical diagnosis.
+            </p>
+
+        </form>
+
+    </main>
+
+    <script>
+
+        const patientForm = document.getElementById("patientForm");
+
+        const scheduledDate = document.getElementById("scheduledDate");
+        const appointmentDate = document.getElementById("appointmentDate");
+
+        const waitingDays = document.getElementById("waitingDays");
+        const appointmentDay = document.getElementById("appointmentDay");
+        const appointmentDayValue = document.getElementById("appointmentDayValue");
+
+
+        function formatDate(date) {
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+
+        function calculateAppointmentDetails() {
+
+            waitingDays.value = "";
+            appointmentDay.value = "";
+            appointmentDayValue.value = "";
+
+            if (!scheduledDate.value || !appointmentDate.value) {
+                return;
+            }
+
+            const scheduled = new Date(scheduledDate.value + "T00:00:00");
+            const appointment = new Date(appointmentDate.value + "T00:00:00");
+
+            const difference = appointment - scheduled;
+            const days = difference / (1000 * 60 * 60 * 24);
+
+            if (days < 0) {
+
+                alert("Appointment date cannot be before scheduled date.");
+
+                appointmentDate.value = "";
+                return;
+            }
+
+            waitingDays.value = days;
+
+            const dayIndex = appointment.getDay();
+
+            const dayNames = [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ];
+
+            appointmentDay.value = dayNames[dayIndex];
+
+            // Python weekday convention: Monday = 0, Sunday = 6
+            appointmentDayValue.value = (dayIndex + 6) % 7;
+        }
+
+
+        scheduledDate.addEventListener("change", calculateAppointmentDetails);
+        appointmentDate.addEventListener("change", calculateAppointmentDetails);
+
+
+        document.getElementById("samplePatientBtn").addEventListener("click", function () {
+
+            patientForm.elements["Gender"].value = "M";
+            patientForm.elements["Age"].value = 35;
+            patientForm.elements["Neighbourhood"].value = "BONFIM";
+
+            patientForm.elements["Scholarship"].value = "0";
+            patientForm.elements["Hipertension"].value = "1";
+            patientForm.elements["Diabetes"].value = "0";
+            patientForm.elements["Alcoholism"].value = "0";
+
+            patientForm.elements["Handcap"].value = "0";
+            patientForm.elements["SMS_received"].value = "1";
+
+            const today = new Date();
+
+            const appointment = new Date(today);
+            appointment.setDate(today.getDate() + 5);
+
+            scheduledDate.value = formatDate(today);
+            appointmentDate.value = formatDate(appointment);
+
+            calculateAppointmentDetails();
+
+        });
+
+
+        patientForm.addEventListener("reset", function () {
+
+            setTimeout(function () {
+
+                waitingDays.value = "";
+                appointmentDay.value = "";
+                appointmentDayValue.value = "";
+
+            }, 0);
+
+        });
+
+
+        patientForm.addEventListener("submit", function (event) {
+
+            calculateAppointmentDetails();
+
+            if (!scheduledDate.value ||
+                !appointmentDate.value ||
+                appointmentDate.value < scheduledDate.value) {
+
+                event.preventDefault();
+
+                alert("Please enter valid scheduled and appointment dates.");
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
